@@ -1,8 +1,6 @@
 (async function () {
-  // Config section: all environment-like variables in one place
   const CONFIG = {
-    endpoint: 'https://api.parados.ai/track',
-    dnsDomain: 'dns.parados.ai'
+    endpoint: 'https://api.parados.ai/api',
   };
 
   const sessionId = crypto.randomUUID();
@@ -44,28 +42,11 @@
 
   const fingerprint = await getFingerprint();
 
-  await fetch(CONFIG.endpoint + '/fingerprint', {
+  await fetch(CONFIG.endpoint + '/track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(fingerprint)
   });
-
-  setInterval(() => {
-    if (mouseTrail.length === 0) return;
-
-    const chunk = mouseTrail.splice(0, mouseTrail.length);
-
-    fetch(CONFIG.endpoint + '/trail', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: sessionId,
-        timestamp: new Date().toISOString(),
-        trail: chunk,
-        url: window.location.href
-      })
-    });
-  }, 5000);
 
   window.addEventListener('beforeunload', () => {
     if (mouseTrail.length === 0) return;
@@ -150,7 +131,6 @@
           context.oncomplete = event => resolve(event.renderedBuffer.getChannelData(0));
         });
 
-        // Simple hash function
         let hash = 0;
         for (let i = 0; i < buffer.length; i++) {
           hash += Math.pow(buffer[i] * 1000, 2);

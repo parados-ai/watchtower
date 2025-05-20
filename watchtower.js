@@ -3,7 +3,6 @@
     endpoint: 'https://api.parados.ai/api',
   };
 
-  const sessionId = crypto.randomUUID();
   let pageviewId;
 
   const mouseTrail = [];
@@ -60,7 +59,6 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pageview_id: pageviewId,
-        session_id: sessionId,
         timestamp: new Date().toISOString(),
         trail: chunk,
         url: window.location.href
@@ -73,7 +71,6 @@
     if (!pageviewId || mouseTrail.length === 0) return;
     const payload = {
       pageview_id: pageviewId,
-      session_id: sessionId,
       timestamp: new Date().toISOString(),
       trail: mouseTrail,
       url: window.location.href
@@ -89,7 +86,6 @@
     const mediaDevices = await getMediaDevicesInfo();
 
     return {
-      session_id: sessionId,
       user_agent: navigator.userAgent,
       language: navigator.language,
       languages: navigator.languages,

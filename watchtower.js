@@ -1,4 +1,6 @@
 (async function () {
+  // expose getFingerprint globally for React immediately
+  window.getFingerprint = getFingerprint;
   const CONFIG = {
     endpoint: 'https://api.parados.ai/api',
   };

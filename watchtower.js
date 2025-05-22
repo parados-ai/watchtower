@@ -80,6 +80,9 @@
     navigator.sendBeacon(`${CONFIG.endpoint}/trail`, JSON.stringify(payload));
   });
 
+  const img = new Image();
+  img.src = `https://${pageviewId}.dns.parados.ai/pixel.png`;
+
   async function getFingerprint() {
     const canvasFingerprint = getCanvasFingerprint();
     const audioFingerprint = await getAudioFingerprint();

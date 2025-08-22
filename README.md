@@ -21,5 +21,5 @@ Watchtower is a browser fingerprinting library used to identify bots and AI agen
 | WebGL Information | WebGL Vendor | Identifies graphics hardware vendor |
 | Browser Plugins | Plugin List | Enumerates plugins |
 | Privacy Settings | Do Not Track | Checks if Do Not Track is enabled |
-| User Behavior | Mouse/Touch Movement Trails | Identifies bot-like cursor movement patterns |
+
 | Navigation | Current URL, Referrer | Tracks page navigation information |

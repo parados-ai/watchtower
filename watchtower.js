@@ -7,41 +7,6 @@
 
   let pageviewId;
 
-  const mouseTrail = [];
-  const startTime = Date.now();
-  let lastEventTime = 0;
-
-  function recordTrail(x, y, type) {
-    mouseTrail.push({
-      x,
-      y,
-      type,
-      time: Date.now() - startTime
-    });
-
-    if (mouseTrail.length > 1000) {
-      mouseTrail.shift();
-    }
-  }
-
-  const throttleDelay = 50;
-  document.addEventListener('mousemove', (e) => {
-    const now = Date.now();
-    if (now - lastEventTime > throttleDelay) {
-      recordTrail(e.clientX, e.clientY, 'mouse');
-      lastEventTime = now;
-    }
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    const now = Date.now();
-    if (now - lastEventTime > throttleDelay) {
-      const touch = e.touches[0];
-      if (touch) recordTrail(touch.clientX, touch.clientY, 'touch');
-      lastEventTime = now;
-    }
-  });
-
   // 1) Send fingerprint, grab back pageview_id
   const fingerprint = await getFingerprint();
   const trackRes = await fetch(`${CONFIG.endpoint}/track`, {
@@ -52,33 +17,7 @@
   const trackData = await trackRes.json();
   pageviewId = trackData.pageview_id;
 
-  // 2) Periodically flush mouseTrail, now including pageview_id
-  setInterval(() => {
-    if (!pageviewId || mouseTrail.length === 0) return;
-    const chunk = mouseTrail.splice(0, mouseTrail.length);
-    fetch(`${CONFIG.endpoint}/trail`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pageview_id: pageviewId,
-        timestamp: new Date().toISOString(),
-        trail: chunk,
-        url: window.location.href
-      })
-    });
-  }, 5000);
 
-  // 3) On unload, send remaining trail via sendBeacon
-  window.addEventListener('beforeunload', () => {
-    if (!pageviewId || mouseTrail.length === 0) return;
-    const payload = {
-      pageview_id: pageviewId,
-      timestamp: new Date().toISOString(),
-      trail: mouseTrail,
-      url: window.location.href
-    };
-    navigator.sendBeacon(`${CONFIG.endpoint}/trail`, JSON.stringify(payload));
-  });
 
   const img = new Image();
   img.src = `https://${pageviewId}.dns.parados.ai/pixel.png`;
